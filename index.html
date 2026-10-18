@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الجرد - الفرع</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: bold; color: var(--text-primary);">جاري تحضير التطبيق...</p>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app-container" class="container hidden">
+        <!-- Header -->
+        <header class="top-bar">
+            <div class="header-titles">
+                <h1 id="i18n-app-title">📋 نظام جرد الفروع</h1>
+                <p id="branch-display-tag" style="color: var(--primary); font-weight: bold;">فرع: -</p>
+            </div>
+            <div class="header-actions">
+                <button onclick="toggleLanguage()" class="btn-secondary">🌐 EN / AR</button>
+                <button onclick="toggleTheme()" class="btn-secondary" title="تغيير المظهر">🌙 / ☀️</button>
+                <button onclick="openAdminModal()" class="btn-secondary" id="i18n-btn-admin">⚙️ لوحة المشرف</button>
+                <button onclick="handleSaveAndExport()" class="btn-primary" id="i18n-btn-submit">🚀 حفظ وتصدير للفرع الرئيسي</button>
+            </div>
+        </header>
+
+        <!-- Category Tabs -->
+        <nav id="tabs-wrapper" class="tabs-container"></nav>
+
+        <!-- Category Content & Inventory Table -->
+        <main class="content-area">
+            <div class="table-card">
+                <div class="table-header-bar">
+                    <h2 id="category-title" style="font-size: 1.2rem; color: var(--text-primary);">القائمة</h2>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th id="i18n-th-item">الصنف</th>
+                                <th id="i18n-th-date">التاريخ</th>
+                                <th>
+                                    <span id="i18n-th-rec">مستلم</span> 
+                                    <button onclick="requestColumnUnlock('received')" class="btn-lock-toggle" id="lock-icon-rec">🔒</button>
+                                </th>
+                                <th id="i18n-th-new">جديد</th>
+                                <th>
+                                    <span id="i18n-th-del">مسلم</span> 
+                                    <button onclick="requestColumnUnlock('delivered')" class="btn-lock-toggle" id="lock-icon-del">🔒</button>
+                                </th>
+                                <th id="i18n-th-total">العدد النهائي</th>
+                                <th id="i18n-th-note">ملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h3 id="modal-title">فتح العمود</h3>
+            <p id="i18n-pass-desc">أدخل كلمة المرور الخاصة بهذا العمود</p>
+            <input type="password" id="modal-password-input" class="styled-input" placeholder="****">
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button onclick="verifyPasswordAction()" class="btn-primary" style="flex: 1; justify-content: center;" id="i18n-btn-confirm">تأكيد</button>
+                <button onclick="closePasswordModal()" class="btn-secondary" style="flex: 1; justify-content: center;" id="i18n-btn-cancel">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="admin-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width: 500px; text-align: right;">
+            <h3 id="i18n-admin-title" style="text-align: center; margin-bottom: 15px;">⚙️ لوحة المشرف</h3>
+            
+            <!-- Login View -->
+            <div id="admin-login-view">
+                <input type="password" id="admin-master-input" class="styled-input" placeholder="كلمة مرور المشرف (9999)">
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button onclick="verifyAdminLogin()" class="btn-primary" style="flex: 1; justify-content: center;" id="i18n-admin-enter">دخول</button>
+                    <button onclick="closeAdminModal()" class="btn-secondary" style="flex: 1; justify-content: center;" id="i18n-admin-close">إلغاء</button>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="admin-settings-view" style="display: none;">
+                <div class="admin-section">
+                    <h4 id="i18n-admin-info">بيانات الفرع</h4>
+                    <input type="text" id="branch-name-edit" class="styled-input" placeholder="اسم الفرع">
+                    <input type="text" id="branch-phone-edit" class="styled-input" placeholder="رقم الهاتف">
+                </div>
+
+                <div class="admin-section" style="margin-top: 15px;">
+                    <h4 id="i18n-admin-passes">كلمات المرور</h4>
+                    <input type="text" id="pass-received-edit" class="styled-input" placeholder="كلمة مرور عمود مستلم">
+                    <input type="text" id="pass-delivered-edit" class="styled-input" placeholder="كلمة مرور عمود مسلم">
+                    <input type="text" id="pass-admin-edit" class="styled-input" placeholder="كلمة مرور المشرف">
+                </div>
+
+                <div class="admin-section" style="margin-top: 15px;">
+                    <h4 id="i18n-admin-items">إدارة الأصناف والقوائم</h4>
+                    <select id="add-item-category-select" class="styled-input"></select>
+                    <input type="text" id="new-item-name-input" class="styled-input" placeholder="اسم الصنف الجديد">
+                    <button onclick="addNewItem()" class="btn-primary" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="i18n-btn-add-item">+ إضافة صنف</button>
+
+                    <select id="del-item-category-select" class="styled-input" onchange="populateItemsForDeletion()"></select>
+                    <select id="del-item-name-select" class="styled-input"></select>
+                    <button onclick="deleteSelectedItem()" class="btn-danger" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="i18n-btn-del-item">🗑️ حذف صنف</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button onclick="saveAdminSettings()" class="btn-primary" style="flex: 1; justify-content: center;" id="i18n-btn-save-admin">حفظ الإعدادات</button>
+                    <button onclick="closeAdminModal()" class="btn-secondary" style="flex: 1; justify-content: center;" id="i18n-btn-close-admin">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
