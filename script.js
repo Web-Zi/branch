@@ -3,7 +3,7 @@
 // =========================================================================
 const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycby-HCCNrYC-ZB0IKRFfZP2w4CXz2SmLz3MNJbGUCRGsywhTNe096MLxLaOU6L4GA3PRuA/exec";
 
-// Bilingual Translations
+// Bilingual Translations Dictionary
 const i18n = {
     ar: {
         appTitle: "📋 نظام جرد الفروع",
@@ -72,24 +72,26 @@ function applyLanguage() {
 
     const t = i18n[currentLang];
 
-    document.getElementById('i18n-app-title').innerText = t.appTitle;
-    document.getElementById('i18n-btn-admin').innerText = t.adminBtn;
-    document.getElementById('i18n-btn-submit').innerText = t.submitBtn;
+    if (document.getElementById('i18n-app-title')) document.getElementById('i18n-app-title').innerText = t.appTitle;
+    if (document.getElementById('i18n-btn-admin')) document.getElementById('i18n-btn-admin').innerText = t.adminBtn;
+    if (document.getElementById('i18n-btn-submit')) document.getElementById('i18n-btn-submit').innerText = t.submitBtn;
 
-    document.getElementById('i18n-th-item').innerText = t.thItem;
-    document.getElementById('i18n-th-date').innerText = t.thDate;
-    document.getElementById('i18n-th-rec').innerText = t.thRec;
-    document.getElementById('i18n-th-new').innerText = t.thNew;
-    document.getElementById('i18n-th-del').innerText = t.thDel;
-    document.getElementById('i18n-th-total').innerText = t.thTotal;
-    document.getElementById('i18n-th-note').innerText = t.thNote;
+    if (document.getElementById('i18n-th-item')) document.getElementById('i18n-th-item').innerText = t.thItem;
+    if (document.getElementById('i18n-th-date')) document.getElementById('i18n-th-date').innerText = t.thDate;
+    if (document.getElementById('i18n-th-rec')) document.getElementById('i18n-th-rec').innerText = t.thRec;
+    if (document.getElementById('i18n-th-new')) document.getElementById('i18n-th-new').innerText = t.thNew;
+    if (document.getElementById('i18n-th-del')) document.getElementById('i18n-th-del').innerText = t.thDel;
+    if (document.getElementById('i18n-th-total')) document.getElementById('i18n-th-total').innerText = t.thTotal;
+    if (document.getElementById('i18n-th-note')) document.getElementById('i18n-th-note').innerText = t.thNote;
 
-    document.getElementById('i18n-pass-desc').innerText = t.passDesc;
-    document.getElementById('i18n-btn-confirm').innerText = t.confirm;
-    document.getElementById('i18n-btn-cancel').innerText = t.cancel;
+    if (document.getElementById('i18n-pass-desc')) document.getElementById('i18n-pass-desc').innerText = t.passDesc;
+    if (document.getElementById('i18n-btn-confirm')) document.getElementById('i18n-btn-confirm').innerText = t.confirm;
+    if (document.getElementById('i18n-btn-cancel')) document.getElementById('i18n-btn-cancel').innerText = t.cancel;
 
     const branch = getBranchInfo();
-    document.getElementById('branch-display-tag').innerText = `${t.branchPrefix}${branch.name}`;
+    if (document.getElementById('branch-display-tag')) {
+        document.getElementById('branch-display-tag').innerText = `${t.branchPrefix}${branch.name}`;
+    }
 }
 
 // Default Categories Structure
@@ -161,8 +163,12 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
-    document.getElementById('splash-screen').style.display = 'none';
-    document.getElementById('app-container').classList.remove('hidden');
+    if (document.getElementById('splash-screen')) {
+        document.getElementById('splash-screen').style.display = 'none';
+    }
+    if (document.getElementById('app-container')) {
+        document.getElementById('app-container').classList.remove('hidden');
+    }
 
     applyLanguage();
     renderTabs();
@@ -176,6 +182,7 @@ function toggleTheme() {
 
 function renderTabs() {
     const wrapper = document.getElementById('tabs-wrapper');
+    if (!wrapper) return;
     wrapper.innerHTML = "";
 
     categories.forEach((cat, index) => {
@@ -196,12 +203,21 @@ function switchCategory(newIndex) {
 
 function renderTable() {
     const activeCat = categories[currentCategoryIndex];
-    document.getElementById('category-title').innerText = activeCat.name;
+    if (!activeCat) return;
 
-    document.getElementById('lock-icon-rec').innerText = isReceivedUnlocked ? "🔓" : "🔒";
-    document.getElementById('lock-icon-del').innerText = isDeliveredUnlocked ? "🔓" : "🔒";
+    if (document.getElementById('category-title')) {
+        document.getElementById('category-title').innerText = activeCat.name;
+    }
+
+    if (document.getElementById('lock-icon-rec')) {
+        document.getElementById('lock-icon-rec').innerText = isReceivedUnlocked ? "🔓" : "🔒";
+    }
+    if (document.getElementById('lock-icon-del')) {
+        document.getElementById('lock-icon-del').innerText = isDeliveredUnlocked ? "🔓" : "🔒";
+    }
 
     const tbody = document.getElementById('inventory-body');
+    if (!tbody) return;
     tbody.innerHTML = "";
 
     const savedState = localStorage.getItem(`salma_cat_${currentCategoryIndex}`);
@@ -244,6 +260,7 @@ function calculateRowTotal(inputElem) {
 
 function saveCurrentCategoryState() {
     const tbody = document.getElementById('inventory-body');
+    if (!tbody) return;
     const rows = tbody.querySelectorAll('tr');
     if (!rows || rows.length === 0) return;
 
@@ -281,9 +298,11 @@ function requestColumnUnlock(type) {
     }
 
     pendingUnlockTarget = type;
-    document.getElementById('modal-title').innerText = type === 'received' ? 
-        (currentLang === 'ar' ? "فتح عمود (مستلم)" : "Unlock Received Column") : 
-        (currentLang === 'ar' ? "فتح عمود (مسلم)" : "Unlock Delivered Column");
+    if (document.getElementById('modal-title')) {
+        document.getElementById('modal-title').innerText = type === 'received' ? 
+            (currentLang === 'ar' ? "فتح عمود (مستلم)" : "Unlock Received Column") : 
+            (currentLang === 'ar' ? "فتح عمود (مسلم)" : "Unlock Delivered Column");
+    }
     document.getElementById('modal-password-input').value = "";
     document.getElementById('password-modal').style.display = "flex";
 }
@@ -453,13 +472,16 @@ function populateAdminPanelFields() {
 function populateCategorySelects() {
     const addCatSelect = document.getElementById('add-item-category-select');
     const delCatSelectItem = document.getElementById('del-item-category-select');
+    const delCatSelect = document.getElementById('del-category-select');
 
-    addCatSelect.innerHTML = "";
-    delCatSelectItem.innerHTML = "";
+    if (addCatSelect) addCatSelect.innerHTML = "";
+    if (delCatSelectItem) delCatSelectItem.innerHTML = "";
+    if (delCatSelect) delCatSelect.innerHTML = "";
 
     categories.forEach((cat, idx) => {
-        addCatSelect.add(new Option(cat.name, idx));
-        delCatSelectItem.add(new Option(cat.name, idx));
+        if (addCatSelect) addCatSelect.add(new Option(cat.name, idx));
+        if (delCatSelectItem) delCatSelectItem.add(new Option(cat.name, idx));
+        if (delCatSelect) delCatSelect.add(new Option(cat.name, idx));
     });
 
     populateItemsForDeletion();
@@ -468,6 +490,7 @@ function populateCategorySelects() {
 function populateItemsForDeletion() {
     const catIdx = document.getElementById('del-item-category-select').value;
     const delItemSelect = document.getElementById('del-item-name-select');
+    if (!delItemSelect) return;
     delItemSelect.innerHTML = "";
 
     if (categories[catIdx] && categories[catIdx].items) {
@@ -481,27 +504,62 @@ function addNewItem() {
     const catIdx = document.getElementById('add-item-category-select').value;
     const itemName = document.getElementById('new-item-name-input').value.trim();
 
-    if (!itemName) return alert("Item name required");
+    if (!itemName) return alert(currentLang === 'ar' ? "يرجى إدخال اسم الصنف!" : "Item name required");
 
     categories[catIdx].items.push(itemName);
     saveCategories(categories);
     document.getElementById('new-item-name-input').value = "";
     populateCategorySelects();
     renderTable();
-    alert("Item added successfully!");
+    alert(currentLang === 'ar' ? "تمت إضافة الصنف بنجاح!" : "Item added successfully!");
 }
 
 function deleteSelectedItem() {
     const catIdx = document.getElementById('del-item-category-select').value;
     const itemIdx = document.getElementById('del-item-name-select').value;
 
-    if (itemIdx === null || itemIdx === "") return alert("No item selected");
+    if (itemIdx === null || itemIdx === "") return alert(currentLang === 'ar' ? "لم يتم تحديد صنف!" : "No item selected");
 
     categories[catIdx].items.splice(itemIdx, 1);
     saveCategories(categories);
     populateCategorySelects();
     renderTable();
-    alert("Item deleted successfully!");
+    alert(currentLang === 'ar' ? "تم حذف الصنف بنجاح!" : "Item deleted successfully!");
+}
+
+function addNewCategory() {
+    const catNameInput = document.getElementById('new-category-name-input');
+    if (!catNameInput) return;
+    const catName = catNameInput.value.trim();
+
+    if (!catName) return alert(currentLang === 'ar' ? "يرجى إدخال اسم القائمة الجديدة!" : "Please enter a category name!");
+
+    categories.push({ name: catName, items: [] });
+    saveCategories(categories);
+    catNameInput.value = "";
+    populateCategorySelects();
+    renderTabs();
+    alert(currentLang === 'ar' ? "تمت إضافة القائمة الجديدة بنجاح!" : "Category added successfully!");
+}
+
+function deleteSelectedCategory() {
+    const delCatSelect = document.getElementById('del-category-select');
+    if (!delCatSelect) return;
+    const catIdx = delCatSelect.value;
+
+    if (categories.length <= 1) {
+        return alert(currentLang === 'ar' ? "لا يمكن حذف جميع القوائم! يجب إبقاء قائمة واحدة على الأقل." : "Cannot delete all categories! Keep at least one.");
+    }
+
+    if (confirm(currentLang === 'ar' ? `هل أنت متأكد من حذف قائمة (${categories[catIdx].name}) بالكامل؟` : `Delete category (${categories[catIdx].name})?`)) {
+        categories.splice(catIdx, 1);
+        saveCategories(categories);
+        currentCategoryIndex = 0;
+        populateCategorySelects();
+        renderTabs();
+        renderTable();
+        alert(currentLang === 'ar' ? "تم حذف القائمة بنجاح!" : "Category deleted successfully!");
+    }
 }
 
 function saveAdminSettings() {
@@ -513,7 +571,7 @@ function saveAdminSettings() {
     const passAdm = document.getElementById('pass-admin-edit').value.trim();
 
     if (!name || !passRec || !passDel || !passAdm) {
-        return alert("All fields are required!");
+        return alert(currentLang === 'ar' ? "جميع الحقول مطلوبة!" : "All fields are required!");
     }
 
     localStorage.setItem('salma_branch_name', name);
@@ -524,6 +582,6 @@ function saveAdminSettings() {
     localStorage.setItem('salma_pass_admin', passAdm);
 
     applyLanguage();
-    alert("Settings saved successfully!");
+    alert(currentLang === 'ar' ? "تم حفظ الإعدادات بنجاح!" : "Settings saved successfully!");
     closeAdminModal();
 }
