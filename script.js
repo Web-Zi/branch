@@ -153,8 +153,8 @@ function getPasswords() {
 
 function getBranchInfo() {
     return {
-        name: localStorage.getItem('salma_branch_name') || "Resta",
-        phone: localStorage.getItem('salma_branch_phone') || "01000000000"
+        name: localStorage.getItem('salma_branch_name') || "",
+        phone: localStorage.getItem('salma_branch_phone') || "01xxxxxxxxx"
     };
 }
 
